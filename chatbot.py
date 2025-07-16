@@ -20,10 +20,11 @@ def login(username, password):
     return any((user_df["username"] == username) & (user_df["password"] == password))
 
 def register(username, password):
-    if username in user_df["username"].values:
+    df = pd.read_excel(USER_DB)  # อ่านใหม่ทุกครั้งก่อนเพิ่ม
+    if username in df["username"].values:
         return False
-    user_df.loc[len(user_df)] = [username, password]
-    user_df.to_excel(USER_DB, index=False)
+    df.loc[len(df)] = [username, password]
+    df.to_excel(USER_DB, index=False)
     return True
 
 # --- UI สำหรับเลือกล็อกอินหรือสมัครสมาชิก ---
