@@ -8,7 +8,7 @@ from rag import load_data, search_relevant_places
 genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 
 # --- โหลด/เตรียมฐานข้อมูลผู้ใช้ ---
-USER_DB = "data/users.xlsx"
+USER_DB = os.path.join(os.path.dirname(__file__), "data/users.xlsx")
 if not os.path.exists(USER_DB):
     df = pd.DataFrame(columns=["username", "password"])
     df.to_excel(USER_DB, index=False)
@@ -20,7 +20,7 @@ def login(username, password):
     return any((user_df["username"] == username) & (user_df["password"] == password))
 
 def register(username, password):
-    df = pd.read_excel(USER_DB)  # โหลดใหม่ทุกครั้ง
+    df = pd.read_excel(USER_DB)  # โหลดสด
     if username in df["username"].values:
         return False
     new_row = pd.DataFrame([{"username": username, "password": password}])
