@@ -20,10 +20,11 @@ def login(username, password):
     return any((user_df["username"] == username) & (user_df["password"] == password))
 
 def register(username, password):
-    df = pd.read_excel(USER_DB)  # อ่านใหม่ทุกครั้งก่อนเพิ่ม
+    df = pd.read_excel(USER_DB)  # โหลดใหม่ทุกครั้ง
     if username in df["username"].values:
         return False
-    df.loc[len(df)] = [username, password]
+    new_row = pd.DataFrame([{"username": username, "password": password}])
+    df = pd.concat([df, new_row], ignore_index=True)
     df.to_excel(USER_DB, index=False)
     return True
 
