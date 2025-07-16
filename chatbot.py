@@ -5,23 +5,23 @@ import os
 import uuid
 from rag import load_data, search_relevant_places
 
-# กำหนดค่า API KEY
+# ตั้งค่า API key สำหรับ Gemini
 genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 
-# ตั้งค่า Streamlit
+# ตั้งค่าหน้าเว็บ
 st.set_page_config(page_title="TripTech AI", page_icon="🌴")
 st.title("🌴 TripTech AI")
 
-# โหลดข้อมูลจาก Excel
+# โหลดข้อมูลท่องเที่ยวจาก Excel
 df = load_data()
 
-# สร้าง session_id เพื่อแยกแต่ละการใช้งาน
+# สร้าง session_id สำหรับแต่ละผู้ใช้
 if "session_id" not in st.session_state:
     st.session_state.session_id = str(uuid.uuid4())
 
-# ฟังก์ชันบันทึกข้อความลง Excel
+# ฟังก์ชันสำหรับบันทึกข้อความลง Excel
 def save_to_excel(session_id, role, message):
-    path = "chat_history.xlsx"
+    path = "data/chat_history.xlsx"
     if os.path.exists(path):
         df = pd.read_excel(path)
     else:
@@ -42,21 +42,22 @@ for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# รับข้อความจากผู้ใช้
+# กล่องรับข้อความ
 user_input = st.chat_input("อยากเที่ยวที่ไหน ถามมาได้เลย...")
 
 if user_input:
+    # แสดงข้อความผู้ใช้และบันทึกลงประวัติ
     st.chat_message("user").markdown(user_input)
     st.session_state.messages.append({"role": "user", "content": user_input})
     save_to_excel(st.session_state.session_id, "user", user_input)
 
-    # ค้นหาสถานที่จาก Excel
+    # ค้นหาสถานที่จากข้อมูล
     results = search_relevant_places(df, user_input)
     context = "\n".join(
         f"- {r['ชื่อสถานที่']} ({r['จังหวัด']}): {r['คำอธิบาย']}" for r in results
     )
 
-    # รวมบทสนทนาเดิมเป็นบริบท
+    # สร้างบริบทจากบทสนทนาเดิม
     history_text = ""
     for i, msg in enumerate(st.session_state.messages):
         if i == 0 and msg["role"] == "assistant":
@@ -64,7 +65,7 @@ if user_input:
         role = "ผู้ใช้" if msg["role"] == "user" else "AI"
         history_text += f"{role}: {msg['content']}\n"
 
-    # สร้าง prompt
+    # สร้าง prompt สำหรับ Gemini
     prompt = f"""
 คุณคือไกด์ท่องเที่ยวในภาคใต้ของประเทศไทย
 ต่อไปนี้คือบทสนทนาระหว่างคุณกับผู้ใช้:
@@ -76,7 +77,7 @@ if user_input:
 กรุณาตอบคำถามล่าสุดต่อจากบทสนทนาเดิมอย่างสอดคล้อง ใช้ภาษากระชับ เป็นกันเอง ไม่ทักทายซ้ำถ้าไม่ใช่ประโยคแรก
 """
 
-    # เรียก Gemini AI
+    # เรียก Gemini
     try:
         model = genai.GenerativeModel(model_name="gemini-2.0-flash-lite")
         response = model.generate_content(prompt)
@@ -84,7 +85,7 @@ if user_input:
     except Exception as e:
         bot_reply = f"❌ เกิดข้อผิดพลาดจาก Gemini: {e}"
 
-    # แสดงและบันทึกคำตอบ AI
+    # แสดงและบันทึกคำตอบ
     st.chat_message("assistant").markdown(bot_reply)
     st.session_state.messages.append({"role": "assistant", "content": bot_reply})
     save_to_excel(st.session_state.session_id, "assistant", bot_reply)
