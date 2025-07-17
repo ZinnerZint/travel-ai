@@ -1,7 +1,6 @@
 import streamlit as st
 import google.generativeai as genai
 from rag import load_data, search_relevant_places
-from auth import login
 
 # ตั้งค่า API key สำหรับ Gemini
 genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
