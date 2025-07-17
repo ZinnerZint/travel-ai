@@ -13,8 +13,3 @@ cookie:
   expiry_days: 30
   key: triptech_cookie_key
   name: triptech_cookie
-
-preauthorized:
-  emails:
-    - zinner@gmail.com
-    - admin@triptech.ai
