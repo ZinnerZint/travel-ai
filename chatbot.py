@@ -70,7 +70,7 @@ if user_input:
     # แสดงรูปภาพพร้อมเครดิต (เฉพาะตอนผู้ใช้ถาม)
     for r in results:
         if 'รูปภาพ' in r and isinstance(r['รูปภาพ'], str) and r['รูปภาพ'].startswith("http"):
-            st.image(r['รูปภาพ'], caption=r['ชื่อสถานที่'], use_column_width=True)
+            st.image(r['รูปภาพ'], caption=r['ชื่อสถานที่'], use_container_width=True)
             if 'เครดิต' in r and isinstance(r['เครดิต'], str) and r['เครดิต'].strip():
                 st.markdown(
                     f"<div style='font-size: 0.8em; color: gray;'>📸 เครดิต: {r['เครดิต']}</div>",
