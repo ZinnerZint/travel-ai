@@ -32,7 +32,7 @@ if user_input:
     # ค้นหาสถานที่ที่เกี่ยวข้องจาก Excel
     results = search_relevant_places(df, user_input)
     context = "\n".join(
-        f"- {r['ชื่อสถานที่']} ({r['จังหวัด']}): {r['คำอธิบาย']}\nรูปภาพ: {r.get('รูปภาพ', '')}"
+        f"- {r['ชื่อสถานที่']} ({r['จังหวัด']}): {r['คำอธิบาย']}"
         for r in results
     )
 
@@ -40,7 +40,7 @@ if user_input:
     history_text = ""
     for i, msg in enumerate(st.session_state.messages):
         if i == 0 and msg["role"] == "assistant":
-            continue
+            continue  # ข้ามข้อความทักทายซ้ำ
         role = "ผู้ใช้" if msg["role"] == "user" else "AI"
         history_text += f"{role}: {msg['content']}\n"
 
@@ -57,7 +57,7 @@ if user_input:
 """
 
     try:
-        model = genai.GenerativeModel(model_name="gemini-2.0-flash-lite")
+        model = genai.GenerativeModel(model_name="gemini-2.0-flash-lite")  # ใช้ Gemini Pro
         response = model.generate_content(prompt)
         bot_reply = response.text
     except Exception as e:
@@ -66,13 +66,3 @@ if user_input:
     # แสดงคำตอบจาก AI
     st.chat_message("assistant").markdown(bot_reply)
     st.session_state.messages.append({"role": "assistant", "content": bot_reply})
-
-    # แสดงรูปภาพพร้อมเครดิต (เฉพาะตอนผู้ใช้ถาม)
-    for r in results:
-        if 'รูปภาพ' in r and isinstance(r['รูปภาพ'], str) and r['รูปภาพ'].startswith("http"):
-            st.image(r['รูปภาพ'], caption=r['ชื่อสถานที่'], use_column_width=True)
-            if 'เครดิต' in r and isinstance(r['เครดิต'], str) and r['เครดิต'].strip():
-                st.markdown(
-                    f"<div style='font-size: 0.8em; color: gray;'>📸 เครดิต: {r['เครดิต']}</div>",
-                    unsafe_allow_html=True
-                )
