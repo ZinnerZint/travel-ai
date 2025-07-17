@@ -1,0 +1,20 @@
+credentials:
+  usernames:
+    zinner:
+      email: zinner@gmail.com
+      name: Zinner R
+      password: '$2b$12$smDL2tsCzv4c5mensI3O20XlYJUWWy7mnq381x7JLqsc9y5EEC5kSm'
+    admin:
+      email: admin@triptech.ai
+      name: Admin Bot
+      password: '$2b$12$9qgmSxc5Ao7b7kDyfXz6d604PYS/WyG8jFXu35sNyp6hW3bvKwkC2O'
+
+cookie:
+  expiry_days: 30
+  key: triptech_cookie_key
+  name: triptech_cookie
+
+preauthorized:
+  emails:
+    - zinner@gmail.com
+    - admin@triptech.ai
