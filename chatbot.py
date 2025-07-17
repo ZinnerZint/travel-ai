@@ -13,7 +13,7 @@ with open('config.yaml') as file:
 # ฟังก์ชันบันทึกผู้ใช้ใหม่ลง config.yaml
 def save_user_to_yaml(username, name, email, password):
     from streamlit_authenticator.utilities.hasher import Hasher
-    hashed_pw = Hasher.hash(password)
+    hashed_pw = Hasher().generate(password)
     config["credentials"]["usernames"][username] = {
         "name": name,
         "email": email,
@@ -37,36 +37,36 @@ if "authentication_status" in st.session_state and st.session_state["authenticat
     name = st.session_state["name"]
     username = st.session_state["username"]
     authenticator.logout("ออกจากระบบ", "sidebar")
-    st.sidebar.write(f"👋 ยินดีต้อนรับ {name}")
+    st.sidebar.write(f"\U0001F44B ยินดีต้อนรับ {name}")
 
 elif "authentication_status" in st.session_state and st.session_state["authentication_status"] is False:
-    st.error("❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
+    st.error("\u274C ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
 elif "authentication_status" not in st.session_state or st.session_state["authentication_status"] is None:
-    st.warning("🔐 กรุณากรอกชื่อผู้ใช้และรหัสผ่าน")
+    st.warning("\ud83d\udd10 กรุณากรอกชื่อผู้ใช้และรหัสผ่าน")
 
 # ฟอร์มสมัครสมาชิกแบบบันทึกถาวร
-with st.expander("📝 สมัครสมาชิกใหม่"):
+with st.expander("\U0001F4DD สมัครสมาชิกใหม่"):
     with st.form("register_form", clear_on_submit=True):
-        new_username = st.text_input("👤 ชื่อผู้ใช้", key="reg_user")
-        new_name = st.text_input("🧑‍💼 ชื่อเต็ม", key="reg_name")
-        new_email = st.text_input("📧 อีเมล", key="reg_email")
-        new_password = st.text_input("🔑 รหัสผ่าน", type="password", key="reg_pass")
+        new_username = st.text_input("\U0001F464 ชื่อผู้ใช้", key="reg_user")
+        new_name = st.text_input("\U0001F9D1\u200D\U0001F4BC ชื่อเต็ม", key="reg_name")
+        new_email = st.text_input("\U0001F4E7 อีเมล", key="reg_email")
+        new_password = st.text_input("\U0001F511 รหัสผ่าน", type="password", key="reg_pass")
         submitted = st.form_submit_button("สมัครสมาชิก")
 
         if submitted:
             if new_username in config["credentials"]["usernames"]:
-                st.error("❌ ชื่อนี้ถูกใช้ไปแล้ว")
+                st.error("\u274C ชื่อนี้ถูกใช้ไปแล้ว")
             else:
                 save_user_to_yaml(new_username, new_name, new_email, new_password)
-                st.success("✅ สมัครสำเร็จแล้ว! ไปล็อกอินได้เลย")
+                st.success("\u2705 สมัครสำเร็จแล้ว! ไปล็อกอินได้เลย")
 
 # หน้าหลักเมื่อเข้าสู่ระบบสำเร็จ
-if authentication_status:
+if "authentication_status" in st.session_state and st.session_state["authentication_status"]:
     authenticator.logout("ออกจากระบบ", "sidebar")
-    st.sidebar.write(f"👋 ยินดีต้อนรับ {name}")
+    st.sidebar.write(f"\U0001F44B ยินดีต้อนรับ {name}")
 
     # ฟอร์มเปลี่ยนรหัสผ่าน
-    with st.sidebar.expander("🔐 เปลี่ยนรหัสผ่าน"):
+    with st.sidebar.expander("\ud83d\udd10 เปลี่ยนรหัสผ่าน"):
         try:
             if authenticator.reset_password(username, "เปลี่ยนรหัสผ่าน"):
                 st.success("เปลี่ยนรหัสผ่านเรียบร้อยแล้ว")
@@ -76,8 +76,8 @@ if authentication_status:
     # ======= ระบบหลัก TripTech AI =======
     genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 
-    st.set_page_config(page_title="TripTech AI", page_icon="🌴")
-    st.title("🌴 TripTech AI")
+    st.set_page_config(page_title="TripTech AI", page_icon="\U0001F334")
+    st.title("\U0001F334 TripTech AI")
 
     df = load_data()
 
@@ -123,7 +123,7 @@ if authentication_status:
             response = model.generate_content(prompt)
             bot_reply = response.text
         except Exception as e:
-            bot_reply = f"❌ เกิดข้อผิดพลาดจาก Gemini: {e}"
+            bot_reply = f"\u274C เกิดข้อผิดพลาดจาก Gemini: {e}"
 
         st.chat_message("assistant").markdown(bot_reply)
         st.session_state.messages.append({"role": "assistant", "content": bot_reply})
@@ -133,11 +133,6 @@ if authentication_status:
                 st.image(r['รูปภาพ'], caption=r['ชื่อสถานที่'], use_container_width=True)
                 if 'เครดิต' in r and isinstance(r['เครดิต'], str) and r['เครดิต'].strip():
                     st.markdown(
-                        f"<div style='font-size: 0.8em; color: gray;'>📸 เครดิต: {r['เครดิต']}</div>",
+                        f"<div style='font-size: 0.8em; color: gray;'>\ud83d\udcf8 เครดิต: {r['เครดิต']}</div>",
                         unsafe_allow_html=True
                     )
-
-elif authentication_status is False:
-    st.error("❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
-elif authentication_status is None:
-    st.warning("🔐 กรุณากรอกชื่อผู้ใช้และรหัสผ่าน")
