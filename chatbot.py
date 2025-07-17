@@ -31,7 +31,7 @@ authenticator = stauth.Authenticate(
 )
 
 # หน้าล็อกอิน
-name, authentication_status, username = authenticator.login("เข้าสู่ระบบ", "main")
+name, authentication_status, username = authenticator.login("Login", location="main")
 
 # ฟอร์มสมัครสมาชิกแบบบันทึกถาวร
 with st.expander("📝 สมัครสมาชิกใหม่"):
