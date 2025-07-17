@@ -31,7 +31,18 @@ authenticator = stauth.Authenticate(
 )
 
 # หน้าล็อกอิน
-name, authentication_status, username = authenticator.login("Login", location="main")
+authenticator.login()
+
+if "authentication_status" in st.session_state and st.session_state["authentication_status"]:
+    name = st.session_state["name"]
+    username = st.session_state["username"]
+    authenticator.logout("ออกจากระบบ", "sidebar")
+    st.sidebar.write(f"👋 ยินดีต้อนรับ {name}")
+
+elif "authentication_status" in st.session_state and st.session_state["authentication_status"] is False:
+    st.error("❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
+elif "authentication_status" not in st.session_state or st.session_state["authentication_status"] is None:
+    st.warning("🔐 กรุณากรอกชื่อผู้ใช้และรหัสผ่าน")
 
 # ฟอร์มสมัครสมาชิกแบบบันทึกถาวร
 with st.expander("📝 สมัครสมาชิกใหม่"):
